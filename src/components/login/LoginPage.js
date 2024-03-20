@@ -6,14 +6,26 @@ import {
 	Heading,
 	Input,
 	SlideFade,
+	Fade,
 } from "@chakra-ui/react";
 import { theme } from "@chakra-ui/theme";
 import React from "react";
 import "./Login.css";
 import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
 
 const colors = theme.colors;
 export default function Login() {
+	const [isLoginState, setIsLoginState] = React.useState(true);
+
+	const toggleLoginState = React.useCallback(() => {
+		setIsLoginState(true);
+	}, [setIsLoginState]);
+
+	const toggleRegisterState = React.useCallback(() => {
+		setIsLoginState(false);
+	}, [setIsLoginState]);
+
 	return (
 		<Flex
 			id="login-container"
@@ -44,7 +56,11 @@ export default function Login() {
 				borderTopRightRadius={"3rem"}
 				borderBottomRightRadius={"3rem"}
 			>
-				<LoginForm />
+				{isLoginState ? (
+					<LoginForm onRegisterClick={toggleRegisterState} />
+				) : (
+					<RegisterForm onLoginClick={toggleLoginState} />
+				)}
 			</Center>
 		</Flex>
 	);

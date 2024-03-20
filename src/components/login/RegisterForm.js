@@ -9,11 +9,12 @@ import {
 	VStack,
 	Text,
 	Link,
+	Select,
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
 export default React.forwardRef((props, ref) => {
-    const { onRegisterClick } = props;
+    const { onLoginClick } = props;
 	const {
 		register,
 		handleSubmit,
@@ -35,7 +36,7 @@ export default React.forwardRef((props, ref) => {
 			padding={"4rem"}
 		>
 			<form id="login-form" onSubmit={handleSubmit(onSubmit)}>
-				<FormControl isInvalid={errors.email}>
+				<FormControl marginBottom={"1rem"} isInvalid={errors.email}>
 					<FormLabel>Email address</FormLabel>
 					<Input
 						defaultValue={""}
@@ -48,8 +49,7 @@ export default React.forwardRef((props, ref) => {
 						<FormHelperText>e.g. lorem@ipsum.com</FormHelperText>
 					)}
 				</FormControl>
-				<br />
-				<FormControl isInvalid={errors.password}>
+				<FormControl marginBottom={"1rem"} isInvalid={errors.password}>
 					<FormLabel>Password</FormLabel>
 					<Input
 						type="password"
@@ -61,21 +61,42 @@ export default React.forwardRef((props, ref) => {
 						<FormHelperText>Enter your password</FormHelperText>
 					)}
 				</FormControl>
-				<br />
+				<FormControl marginBottom={"1rem"} isInvalid={errors.question}>
+					<FormLabel>Security question</FormLabel>
+					<Select
+						type="text"
+						{...register("question", { required: true })}
+					>
+						<option value="What is your favorite color?">What is your favorite color?</option>
+						<option value="What is your favorite food?">What is your favorite food?</option>
+					</Select>
+				</FormControl>
+				<FormControl marginBottom={"1rem"} isInvalid={errors.answer}>
+					<FormLabel>Answer</FormLabel>
+					<Input
+						type="text"
+						{...register("answer", { required: true })}
+					/>
+					{errors.answer ? (
+						<FormErrorMessage>Answer is required</FormErrorMessage>
+					) : (
+						<FormHelperText>Answer your chosen question</FormHelperText>
+					)}
+				</FormControl>
 				<Button
 					mt={4}
 					colorScheme="teal"
 					isLoading={isSubmitting}
 					type="submit"
 				>
-					Login
+					Register
 				</Button>
 			</form>
 
 			<Text justifySelf={"end"}>
-				Don't have an account?{" "}
-				<Link color="teal.500" onClick={onRegisterClick}>
-					Register now
+				Already a user?{" "}
+				<Link color="teal.500" onClick={onLoginClick}>
+					Login here
 				</Link>
 			</Text>
 		</Flex>
