@@ -56,7 +56,7 @@ export default React.forwardRef((props, ref) => {
 					navigate("/home");
 				},
 				(reject) => {
-					if (reject.status === 409) { // Check for existing email
+					if (reject?.status === 409) { // Check for existing email
 						setError("registerError", {
 							type: "manual",
 							message: "User already exists",
@@ -91,6 +91,12 @@ export default React.forwardRef((props, ref) => {
 					<Alert status="error" mb="1rem" borderRadius={"0.5rem"}>
 						<AlertIcon />
 						<AlertTitle>{errors.fetchQuestions.message}</AlertTitle>
+					</Alert>
+				)}
+				{errors.registerError && (
+					<Alert status="error" mb="1rem" borderRadius={"0.5rem"}>
+						<AlertIcon />
+						<AlertTitle>{errors.registerError.message}</AlertTitle>
 					</Alert>
 				)}
 				<FormControl marginBottom={"1rem"} isInvalid={errors.email}>
