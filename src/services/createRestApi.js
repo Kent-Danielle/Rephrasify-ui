@@ -1,0 +1,46 @@
+const BASE_URL =
+	process.env.NODE_ENV === "production"
+		? "https://api.example.com"
+		: "http://localhost:8000";
+
+/*
+    Sample usage
+    const api = createRestApi("/api/v1", true);
+*/
+const createRestApi = (url) => {
+	return {
+		get: (suburl, isAuthNeeded) => fetchWrapper(`${url}/${suburl}`, "GET", isAuthNeeded),
+		post: (suburl, isAuthNeeded, data) =>
+			fetchWrapper(`${url}/${suburl}`, "POST", isAuthNeeded, data),
+		put: (suburl, isAuthNeeded, data) =>
+			fetchWrapper(`${url}/${suburl}`, "PUT", isAuthNeeded, data),
+		delete: (suburl, isAuthNeeded, data) =>
+			fetchWrapper(`${url}/${suburl}`, "DELETE", isAuthNeeded, data),
+	};
+};
+
+const fetchWrapper = (url, method, isAuthNeeded, data) => {
+	// default isAuthNeeded = false
+	isAuthNeeded = isAuthNeeded || false;
+	const options = {
+		method: method,
+		headers: {
+			"Content-Type": "application/json",
+		},
+		withCredentials: isAuthNeeded,
+	};
+
+	if (data) {
+		options.body = JSON.stringify(data);
+	}
+
+	return fetch(BASE_URL + url, options).then((response) => {
+		if (response.ok) {
+			return response.json();
+		} else {
+			throw new Error("Something went wrong");
+		}
+	});
+};
+
+export default createRestApi;
