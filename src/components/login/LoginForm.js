@@ -9,11 +9,19 @@ import {
 	VStack,
 	Text,
 	Link,
+	Show,
+	SlideFade,
+	Heading,
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { theme } from "@chakra-ui/theme";
+
+const colors = theme.colors;
 export default React.forwardRef((props, ref) => {
-    const { onRegisterClick } = props;
+	const { onRegisterClick, onForgetClick } = props;
+	const navigate = useNavigate();
 	const {
 		register,
 		handleSubmit,
@@ -21,8 +29,9 @@ export default React.forwardRef((props, ref) => {
 		formState: { errors, isSubmitting },
 	} = useForm();
 
-	const onSubmit = (data) => {
+	const handleOnSubmit = (data) => {
 		console.log(data);
+		navigate("/home");
 	};
 
 	return (
@@ -34,7 +43,17 @@ export default React.forwardRef((props, ref) => {
 			h="100%"
 			padding={"4rem"}
 		>
-			<form id="login-form" onSubmit={handleSubmit(onSubmit)}>
+			<Show below="md">
+				<SlideFade offsetY={-200} in={true}>
+					<Heading color={colors.teal[800]} size={"xl"} textAlign={"center"}>
+						Rephrasify
+					</Heading>
+					<Heading color={colors.teal[500]} size={"sm"}>
+						Elevate Your Expressions with AI
+					</Heading>
+				</SlideFade>
+			</Show>
+			<form id="login-form" onSubmit={handleSubmit(handleOnSubmit)}>
 				<FormControl isInvalid={errors.email}>
 					<FormLabel>Email address</FormLabel>
 					<Input
@@ -58,7 +77,11 @@ export default React.forwardRef((props, ref) => {
 					{errors.password ? (
 						<FormErrorMessage>Password is required</FormErrorMessage>
 					) : (
-						<FormHelperText>Enter your password</FormHelperText>
+						<FormHelperText>
+							<Link color="teal.500" onClick={onForgetClick}>
+								Forgot your password?
+							</Link>
+						</FormHelperText>
 					)}
 				</FormControl>
 				<br />
