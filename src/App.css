@@ -19,10 +19,12 @@ body {
     display: flex;
     align-items: stretch;
     justify-content: center;
+    overflow-x: hidden;
 }
 
 #main-container {
-    min-width: 1750px !important;
+    min-width: 400px !important;
+    width: 1750px !important;
     max-width: 1750px !important;
     display: flex;
     align-items: start;
