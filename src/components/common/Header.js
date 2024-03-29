@@ -2,18 +2,20 @@ import { Button, Flex, Heading, Link, SlideFade } from "@chakra-ui/react";
 import React from "react";
 import { theme } from "@chakra-ui/theme";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const colors = theme.colors;
 export default React.forwardRef((props, ref) => {
 	const navigate = useNavigate();
+	const { logout } = useAuth();
 
 	const handleLogout = React.useCallback(() => {
-		console.log("Logging out");
+		logout();
 		navigate("/login");
 	}, []);
 
 	return (
-		<SlideFade offsetY={-100} in={true} style={{width: "100%"}}>
+		<SlideFade offsetY={-100} in={true} style={{ width: "100%" }}>
 			<Flex
 				direction={"row"}
 				justifyContent={"flex-start"}

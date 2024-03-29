@@ -9,7 +9,8 @@ const BASE_URL =
 */
 const createRestApi = (url) => {
 	return {
-		get: (suburl, isAuthNeeded) => fetchWrapper(`${url}/${suburl}`, "GET", isAuthNeeded),
+		get: (suburl, isAuthNeeded) =>
+			fetchWrapper(`${url}/${suburl}`, "GET", isAuthNeeded),
 		post: (suburl, isAuthNeeded, data) =>
 			fetchWrapper(`${url}/${suburl}`, "POST", isAuthNeeded, data),
 		put: (suburl, isAuthNeeded, data) =>
@@ -35,11 +36,12 @@ const fetchWrapper = (url, method, isAuthNeeded, data) => {
 	}
 
 	return fetch(BASE_URL + url, options).then((response) => {
-		if (response.ok) {
-			return response.json();
-		} else {
-			throw new Error("Something went wrong");
-		}
+		return response.json().then((json) => {
+			if (response.ok) {
+				return Promise.resolve(json);
+			}
+			return Promise.reject(json);
+		});
 	});
 };
 

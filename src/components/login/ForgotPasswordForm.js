@@ -17,6 +17,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { theme } from "@chakra-ui/theme";
+import usersService from "../../services/usersService";
 
 const colors = theme.colors;
 const PAGE_STATE = {
@@ -37,6 +38,7 @@ export default React.forwardRef((props, ref) => {
 
 	const handleOnSubmit = React.useCallback(
 		(data) => {
+			console.log(data)
 			switch (pageState) {
 				case PAGE_STATE.EMAIL:
 					handleEmailSubmit(data);
@@ -56,24 +58,30 @@ export default React.forwardRef((props, ref) => {
 
 	const handleEmailSubmit = React.useCallback(
 		(data) => {
-			console.log(data);
-			setPageState(PAGE_STATE.ANSWER);
+			// TODO: Implement submitting email to get security question
+			// *Use usersService.getUserSecurityQuestion() to get the security question
+			// !NOTE: Only setPageState if answer is right; check api contract to know expected json
+			// If wrong, show error message
+			// setPageState(PAGE_STATE.ANSWER);
 		},
 		[pageState]
 	);
 
 	const handleAnswerSubmit = React.useCallback(
 		(data) => {
-			console.log(data);
-			setPageState(PAGE_STATE.PASSWORD);
+			// TODO: Implement submitting answer to get password reset
+			// !NOTE: Only setPageState if answer is right; check api contract to know expected json
+			// *Use usersService.changePassword
+			// If wrong, show error message
+			// setPageState(PAGE_STATE.PASSWORD);
 		},
 		[pageState]
 	);
 
 	const handlePasswordSubmit = React.useCallback(
 		(data) => {
-			console.log(data);
-			navigate("/home");
+			// TODO: Implement password reset functionality; reference LoginForm.js
+			// *NOTE: Navigate at the end of the promise chain if successful login
 		},
 		[pageState]
 	);

@@ -10,20 +10,41 @@ import {
 	Text,
 	Link,
 	Select,
+	Alert,
+	AlertIcon,
+	AlertTitle,
 } from "@chakra-ui/react";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
+import usersService from "../../services/usersService";
 export default React.forwardRef((props, ref) => {
-    const { onLoginClick } = props;
+	const { onLoginClick } = props;
+	const [questions, setQuestions] = React.useState([]);
 	const {
 		register,
 		handleSubmit,
-		watch,
+		setError,
 		formState: { errors, isSubmitting },
 	} = useForm();
 
-	const onSubmit = (data) => {
+	React.useEffect(() => {
+		usersService.getSecurityQuestions().then(
+			(response) => {
+				console.log(response)
+				setQuestions(response.questions);
+			},
+			(reject) => {
+				setError("fetchQuestions", {
+					type: "manual",
+					message: "Failed to fetch security questions",
+				});
+			}
+		);
+	}, []);
+
+	const handleOnRegister = (data) => {
 		console.log(data);
+		// TODO: Implement register functionality; reference LoginForm.js
 	};
 
 	return (
@@ -35,7 +56,13 @@ export default React.forwardRef((props, ref) => {
 			h="100%"
 			padding={"4rem"}
 		>
-			<form id="login-form" onSubmit={handleSubmit(onSubmit)}>
+			<form id="login-form" onSubmit={handleSubmit(handleOnRegister)}>
+				{errors.fetchQuestions && (
+					<Alert status="error" mb="1rem" borderRadius={"0.5rem"}>
+						<AlertIcon />
+						<AlertTitle>{errors.fetchQuestions.message}</AlertTitle>
+					</Alert>
+				)}
 				<FormControl marginBottom={"1rem"} isInvalid={errors.email}>
 					<FormLabel>Email address</FormLabel>
 					<Input
@@ -63,20 +90,17 @@ export default React.forwardRef((props, ref) => {
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.question}>
 					<FormLabel>Security question</FormLabel>
-					<Select
-						type="text"
-						{...register("question", { required: true })}
-					>
-						<option value="What is your favorite color?">What is your favorite color?</option>
-						<option value="What is your favorite food?">What is your favorite food?</option>
+					<Select type="text" {...register("questionId", { required: true })}>
+						{questions?.map((question) => (
+							<option key={question.id} value={question.id}>
+								{question.question}
+							</option>
+						))}
 					</Select>
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.answer}>
 					<FormLabel>Answer</FormLabel>
-					<Input
-						type="text"
-						{...register("answer", { required: true })}
-					/>
+					<Input type="text" {...register("answer", { required: true })} />
 					{errors.answer ? (
 						<FormErrorMessage>Answer is required</FormErrorMessage>
 					) : (

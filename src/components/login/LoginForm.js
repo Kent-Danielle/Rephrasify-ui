@@ -12,26 +12,51 @@ import {
 	Show,
 	SlideFade,
 	Heading,
+	Alert,
+	AlertIcon,
+	AlertTitle,
+	AlertDescription,
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { theme } from "@chakra-ui/theme";
+import usersService from "../../services/usersService";
+import { useAuth } from "../../context/AuthContext";
 
 const colors = theme.colors;
 export default React.forwardRef((props, ref) => {
 	const { onRegisterClick, onForgetClick } = props;
+	const { login } = useAuth();
 	const navigate = useNavigate();
 	const {
 		register,
 		handleSubmit,
-		watch,
+		setError,
 		formState: { errors, isSubmitting },
 	} = useForm();
 
-	const handleOnSubmit = (data) => {
-		console.log(data);
-		navigate("/home");
+	const handleOnLogin = (data) => {
+		usersService
+			.loginUser(data)
+			.then(
+				(response) => {
+					login(response);
+					navigate("/home");
+				},
+				(reject) => {
+					setError("invalidLogin", {
+						type: "manual",
+						message: "Invalid email/password",
+					});
+				}
+			)
+			.catch((error) => {
+				setError("invalidLogin", {
+					type: "manual",
+					message: "Something went wrong. Please try again.",
+				});
+			});
 	};
 
 	return (
@@ -53,7 +78,14 @@ export default React.forwardRef((props, ref) => {
 					</Heading>
 				</SlideFade>
 			</Show>
-			<form id="login-form" onSubmit={handleSubmit(handleOnSubmit)}>
+			<form id="login-form" onSubmit={handleSubmit(handleOnLogin)}>
+				{errors.invalidLogin && (
+					<Alert status="error" mb="1rem" borderRadius={"0.5rem"}>
+						<AlertIcon />
+						<AlertTitle>{errors.invalidLogin.message}</AlertTitle>
+					</Alert>
+				)}
+
 				<FormControl isInvalid={errors.email}>
 					<FormLabel>Email address</FormLabel>
 					<Input
