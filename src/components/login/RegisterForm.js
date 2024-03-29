@@ -16,9 +16,13 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { set, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import usersService from "../../services/usersService";
 export default React.forwardRef((props, ref) => {
 	const { onLoginClick } = props;
+	const { login } = useAuth();
+	const navigate = useNavigate();
 	const [questions, setQuestions] = React.useState([]);
 	const {
 		register,
@@ -30,7 +34,7 @@ export default React.forwardRef((props, ref) => {
 	React.useEffect(() => {
 		usersService.getSecurityQuestions().then(
 			(response) => {
-				console.log(response)
+				console.log(response);
 				setQuestions(response.questions);
 			},
 			(reject) => {
@@ -44,7 +48,33 @@ export default React.forwardRef((props, ref) => {
 
 	const handleOnRegister = (data) => {
 		console.log(data);
-		// TODO: Implement register functionality; reference LoginForm.js
+		usersService
+			.registerUser(data)
+			.then(
+				(response) => {
+					login(response);
+					navigate("/home");
+				},
+				(reject) => {
+					if (reject.status === 409) { // Check for existing email
+						setError("registerError", {
+							type: "manual",
+							message: "User already exists",
+						});
+					} else {
+						setError("registerError", {
+							type: "manual",
+							message: "Failed to register user",
+						});
+					}
+				}
+			)
+			.catch((error) => {
+				setError("registerError", {
+					type: "manual",
+					message: "Something went wrong. Please try again.",
+				});
+			});
 	};
 
 	return (
