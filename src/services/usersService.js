@@ -6,7 +6,7 @@ const usersService = {
     getSecurityQuestions: () => api.get("getSecurityQuestions"),
     registerUser: (data) => api.post("register", false, data),
     loginUser: (data) => api.post("login", false, data),
-    getUserSecurityQuestion: (data) => api.get("getUserSecurityQuestion?email=" + data.email),
+    getUserSecurityQuestion: (data) => api.get("getUserSecurityQuestion?email=" + encodeURIComponent(data.email)),
     answerSecurityQuestion: (data) => api.post("answerSecurityQuestion", false, data),
     changePassword: (data) => api.post("changePassword", false, data),
 };
