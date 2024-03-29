@@ -4,11 +4,13 @@ import "devextreme/dist/css/dx.fluent.saas.light.css";
 import React from "react";
 import PageContainer from "../common/PageContainer";
 import UserDashboard from "./UserDashboard";
+import ApiDashboard from "./ApiDashboard";
 
 const colors = theme.colors;
 
 export default React.forwardRef((props, ref) => {
 	const dashboardRef = React.useRef();
+	const usageDashboardRef = React.useRef();
 
 	return (
 		<PageContainer>
@@ -23,7 +25,7 @@ export default React.forwardRef((props, ref) => {
 				<Heading color={colors.teal[800]} size={"lg"} mb={"2rem"}>
 					API Usage Dashboard
 				</Heading>
-				<UserDashboard ref={dashboardRef} />
+				<ApiDashboard ref={usageDashboardRef} />
 			</Flex>
 		</PageContainer>
 	);
