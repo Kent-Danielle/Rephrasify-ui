@@ -9,7 +9,7 @@ const BASE_URL =
 */
 const createRestApi = (url) => {
 	return {
-		get: (suburl, isAuthNeeded) =>
+		get: (suburl, isAuthNeeded, data) =>
 			fetchWrapper(`${url}/${suburl}`, "GET", isAuthNeeded),
 		post: (suburl, isAuthNeeded, data) =>
 			fetchWrapper(`${url}/${suburl}`, "POST", isAuthNeeded, data),

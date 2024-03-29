@@ -1,7 +1,7 @@
 import { Button, Flex, Heading, Link, SlideFade } from "@chakra-ui/react";
 import React from "react";
 import { theme } from "@chakra-ui/theme";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const colors = theme.colors;
@@ -10,6 +10,8 @@ export default React.forwardRef((props, ref) => {
 	const { logout } = useAuth();
 
 	const handleLogout = React.useCallback(() => {
+		console.log("Logging out")
+		//TODO: Call logout api here; add it in usersservice.js
 		logout();
 		navigate("/login");
 	}, []);
@@ -28,12 +30,12 @@ export default React.forwardRef((props, ref) => {
 				<Heading color={colors.teal[800]} size={"md"} mr={"3rem"}>
 					Rephrasify
 				</Heading>
-				<Link href="/home" mr={"2rem"}>
+				<NavLink style={{marginRight: "2rem"}} to={'/home'}>
 					Home
-				</Link>
-				<Link href="/admin" mr={"2rem"}>
+				</NavLink>
+				<NavLink style={{marginRight: "2rem"}} to={'/admin'}>
 					Admin
-				</Link>
+				</NavLink>
 				<Button
 					colorScheme="teal"
 					variant="outline"
