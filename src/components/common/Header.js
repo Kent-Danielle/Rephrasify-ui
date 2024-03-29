@@ -7,10 +7,10 @@ import { useAuth } from "../../context/AuthContext";
 const colors = theme.colors;
 export default React.forwardRef((props, ref) => {
 	const navigate = useNavigate();
-	const { logout } = useAuth();
+	const { logout, isAdmin } = useAuth();
 
 	const handleLogout = React.useCallback(() => {
-		console.log("Logging out")
+		console.log("Logging out");
 		//TODO: Call logout api here; add it in usersservice.js
 		logout();
 		navigate("/login");
@@ -30,12 +30,14 @@ export default React.forwardRef((props, ref) => {
 				<Heading color={colors.teal[800]} size={"md"} mr={"3rem"}>
 					Rephrasify
 				</Heading>
-				<NavLink style={{marginRight: "2rem"}} to={'/home'}>
+				<NavLink style={{ marginRight: "2rem" }} to={"/home"}>
 					Home
 				</NavLink>
-				<NavLink style={{marginRight: "2rem"}} to={'/admin'}>
-					Admin
-				</NavLink>
+				{isAdmin && (
+					<NavLink style={{ marginRight: "2rem" }} to={"/admin"}>
+						Admin
+					</NavLink>
+				)}
 				<Button
 					colorScheme="teal"
 					variant="outline"

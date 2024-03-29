@@ -13,18 +13,20 @@ const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = React.useState(initialState);
 
     const handleUserInfo = React.useCallback((data) => {
+        console.log(data)
         setUserInfo(data);
-    }, [setUserInfo]);
+    }, []);
 
     const handleLogout = React.useCallback(() => {
         setUserInfo(initialState);
         console.log("Logged out")
-    }, [setUserInfo]);
+    }, []);
 
 
 	const authManager = React.useMemo(() => {
 		return {
 			isAuthenticated: userInfo?.userId !== null,
+            currentUserId: userInfo?.userId,
             isAdmin: userInfo?.isAdmin,
             login: handleUserInfo,
             logout: handleLogout,

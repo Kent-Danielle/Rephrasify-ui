@@ -9,77 +9,79 @@ import {
 } from "devextreme-react/cjs/data-grid";
 import "./dx.fluent.chakra.css";
 import React from "react";
+import { useAuth } from "../../context/AuthContext";
+import userManagementService from "./../../services/userManagementService";
+import { useToast } from "@chakra-ui/react";
 
 const columns = [
-	{ dataField: "UserID", caption: "ID", width: 80, allowEditing: false },
-	{ dataField: "Email", caption: "Email", width: 250, allowEditing: false },
-	{ dataField: "IsAdmin", caption: "Is Admin", width: 250, allowEditing: true },
+	{ dataField: "userId", caption: "ID", width: 80, allowEditing: false },
+	{ dataField: "email", caption: "Email", width: 300, allowEditing: false },
+	{ dataField: "isAdmin", caption: "Is Admin", width: 250, allowEditing: true },
 	{
-		dataField: "CreatedAt",
-		caption: "Created At",
-		dataType: "date",
-		width: 250,
+		dataField: "apiCount",
+		caption: "Total API Usage",
+		width: 200,
 		allowEditing: false,
 	},
-	{ dataField: "Usage", caption: "Usage", width: 100, allowEditing: false },
-];
-
-const rows = [
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 1, Email: "a", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 2, Email: "b", IsAdmin: false, CreatedAt: "01/01/2024", Usage: 1 },
-	{ UserID: 3, Email: "c", IsAdmin: true, CreatedAt: "01/01/2024", Usage: 1 },
 ];
 
 export default React.forwardRef((props, ref) => {
+	const { currentUserId } = useAuth();
+	const toast = useToast();
+	const [users, setUsers] = React.useState([]);
+
+	React.useEffect(() => {
+		userManagementService
+			.getAllUsers({ adminId: currentUserId })
+			.then(
+				(res) => {
+					setUsers(res.users);
+				},
+				(reject) => {
+					toast({
+						title: "Error",
+						description: reject.message,
+						status: "error",
+						duration: 9000,
+						isClosable: true,
+						position: "top-right",
+					});
+				}
+			)
+			.catch((error) => {
+				toast({
+					title: "Error",
+					description: error.message,
+					status: "error",
+					duration: 9000,
+					isClosable: true,
+					position: "top-right",
+				});
+			});
+	}, [currentUserId]);
+
 	const handleOnRowRemoved = React.useCallback((e) => {
-		console.log("Row removed", e);
+		let { data } = e;
+		data = { ...data, adminId: currentUserId };
+		// TODO: Implement fetch api to delete user; use userManagementService.js
 	}, []);
 
 	const handleOnRowUpdated = React.useCallback((e) => {
-		console.log("Row updated", e);
+		let { data } = e;
+		data = { ...data, adminId: currentUserId };
+		// TODO: Implement fetch api to update user; use userManagementService.js
 	}, []);
 
 	return (
 		<DataGrid
 			ref={ref}
-			dataSource={rows}
+			dataSource={users}
 			columns={columns}
 			height={"500px"}
 			onRowRemoved={handleOnRowRemoved}
-			onRowUpdated={handleOnRowRemoved}
+			onRowUpdated={handleOnRowUpdated}
+			showBorders={true}
+			rowAlternationEnabled={true}
 		>
 			<Scrolling mode="virtual" rowRenderingMode="virtual" />
 			<HeaderFilter visible={true} allowSearch={true} />
