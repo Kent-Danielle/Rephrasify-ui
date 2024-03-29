@@ -1,6 +1,6 @@
 import createRestApi from "./createRestApi";
 
-const api = createRestApi("/users", true);
+const api = createRestApi("/users");
 
 const usersService = {
     getSecurityQuestions: () => api.get("getSecurityQuestions"),
