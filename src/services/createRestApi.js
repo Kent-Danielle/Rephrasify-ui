@@ -31,14 +31,19 @@ const fetchWrapper = (url, method, isAuthNeeded, data) => {
 		withCredentials: isAuthNeeded,
 	};
 
-	if (data && url === "/huggingface/paraphrase") {
-		console.log("data", data);
-		url += "?action=" + data.action + "&text=" + data.text;
-	}
+	// if (data && url === "/huggingface/paraphrase") {
+	// 	console.log("data", data);
+	// 	url += "?action=" + data.action + "&text=" + data.text;
+	// }
 
-	if (data && method !== "GET") {
+	// if (data && method !== "GET") {
+	// 	options.body = JSON.stringify(data);
+	// }
+	
+	if (data) {
 		options.body = JSON.stringify(data);
 	}
+	console.log("options", options);
 
 	return fetch(BASE_URL + url, options).then((response) => {
 		return response.json().then((json) => {
