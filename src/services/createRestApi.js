@@ -40,7 +40,6 @@ const fetchWrapper = (url, method, isAuthNeeded, data) => {
 			if (response.ok) {
 				return Promise.resolve(json);
 			}
-			// return Promise.reject(json);
 			return Promise.reject({ ...json, status: response.status }); // Return status code and json
 		});
 	});
