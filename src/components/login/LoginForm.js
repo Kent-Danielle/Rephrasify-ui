@@ -33,6 +33,7 @@ export default React.forwardRef((props, ref) => {
 		register,
 		handleSubmit,
 		setError,
+		clearErrors,
 		formState: { errors, isSubmitting },
 	} = useForm();
 
@@ -58,6 +59,10 @@ export default React.forwardRef((props, ref) => {
 				});
 			});
 	};
+
+	const onChangeClearError = React.useCallback(() => {
+		clearErrors()
+	}, [clearErrors])
 
 	return (
 		<Flex
@@ -91,7 +96,7 @@ export default React.forwardRef((props, ref) => {
 					<Input
 						defaultValue={""}
 						type="email"
-						{...register("email", { required: true })}
+						{...register("email", { required: true, onChange: onChangeClearError})}
 					/>
 					{errors.email ? (
 						<FormErrorMessage>Email is required</FormErrorMessage>
@@ -104,7 +109,7 @@ export default React.forwardRef((props, ref) => {
 					<FormLabel>Password</FormLabel>
 					<Input
 						type="password"
-						{...register("password", { required: true })}
+						{...register("password", { required: true, onChange: onChangeClearError })}
 					/>
 					{errors.password ? (
 						<FormErrorMessage>Password is required</FormErrorMessage>
