@@ -1,6 +1,7 @@
 import React from "react";
 import PageContainer from "../common/PageContainer";
 import Header from "../common/Header";
+import aiService from "../../services/aiService";
 import { useAuth } from "../../context/AuthContext";
 import {
 	Alert,
@@ -21,7 +22,7 @@ import {
 import { useForm } from "react-hook-form";
 
 const ACTIONS = {
-    PARAPHRASE: "Paraphrase this text",
+  PARAPHRASE: "Paraphrase this text",
 	FIX_GRAMMAR: "Fix the grammar",
 	IMPROVE_COHERENCE: "Make this text more coherent",
 	IMPROVE_READABILITY: "Rewrite to make this easier to understand",
@@ -34,6 +35,7 @@ export default React.forwardRef((props, ref) => {
 	const { currentUserId, isOverTheLimit, updateApiCount } =
 		useAuth();
     const [paraphrasedText, setParaphrasedText] = React.useState("");
+		const [apiAlert, setApiAlert] = React.useState("");
 	const {
 		register,
 		handleSubmit,
@@ -43,10 +45,25 @@ export default React.forwardRef((props, ref) => {
 
 	const handleOnSubmit = React.useCallback((data) => {
 		data = { ...data, userId: currentUserId }
-        // TODO: Implement API call to paraphrase text; use aiService.js
         // *Note: data includes userId incase you need it for the API call
         // *If successful result, update Api count & setParaphrasedText()
-        updateApiCount();
+				aiService
+					.paraphraseText(data)
+					.then(
+						(response) => {
+							console.log(response);
+							setParaphrasedText(response.text);
+							updateApiCount();
+							setApiAlert("");
+						},
+						(reject) => {
+							console.log(reject);
+							setApiAlert("Error with Api response");
+						})
+						.catch((error) => {
+							console.log(error);
+							setApiAlert("Fatal error with Api response");
+						})
 	}, [updateApiCount]);
 
 	return (
@@ -91,6 +108,18 @@ export default React.forwardRef((props, ref) => {
 				</Button>
 			</form>
 			<Box w="100%">
+				{apiAlert && (
+					<Alert
+						status="error"
+						mb="0.5rem"
+						borderRadius={"0.5rem"}
+						pb="0.5rem"
+						pt="0.5rem"
+					>
+						<AlertIcon />
+						<AlertTitle fontSize={"0.9rem"}>{apiAlert}</AlertTitle>
+					</Alert>
+				)}
 				{isOverTheLimit && (
 					<Alert
 						status="warning"
