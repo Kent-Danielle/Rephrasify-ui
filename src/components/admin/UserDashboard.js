@@ -66,9 +66,7 @@ export default React.forwardRef((props, ref) => {
 		userManagementService
 			.deleteUser(data)
 			.then(
-				(res) => {
-					setUsers((prev) => prev.filter((user) => user.userId !== data.userId));				
-				},
+				(res) => {},
 				(reject) => {
 					toast({
 						title: "Error",
@@ -78,7 +76,7 @@ export default React.forwardRef((props, ref) => {
 						isClosable: true,
 						position: "top-right",
 					});
-				}				
+				}
 			)
 			.catch((error) => {
 				toast({
@@ -98,9 +96,7 @@ export default React.forwardRef((props, ref) => {
 		userManagementService
 			.updateRole(data)
 			.then(
-				(res) => {
-					setUsers((prev) => prev.map((user) => user.userId === data.userId ? data : user));
-				},
+				(res) => {},
 				(reject) => {
 					toast({
 						title: "Error",
@@ -110,7 +106,7 @@ export default React.forwardRef((props, ref) => {
 						isClosable: true,
 						position: "top-right",
 					});
-				}				
+				}
 			)
 			.catch((error) => {
 				toast({
@@ -120,7 +116,7 @@ export default React.forwardRef((props, ref) => {
 					duration: 9000,
 					isClosable: true,
 					position: "top-right",
-				});			
+				});
 			});
 	}, []);
 
