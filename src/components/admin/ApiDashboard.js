@@ -60,6 +60,8 @@ export default React.forwardRef((props, ref) => {
 	}, [currentUserId]);
 
 	React.useEffect(() => {
+		getData(); // Initial on load call as it would otherwise take 10 seconds to load
+
 		const refresh = setInterval(() => {
 			getData();
 		}, CALL_INTERVAL);
