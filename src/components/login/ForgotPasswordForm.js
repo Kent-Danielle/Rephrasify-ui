@@ -12,6 +12,9 @@ import {
 	Show,
 	SlideFade,
 	Heading,
+	Alert,
+	AlertIcon,
+	AlertTitle,
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -28,10 +31,14 @@ const PAGE_STATE = {
 export default React.forwardRef((props, ref) => {
 	const { onLoginClick } = props;
 	const [pageState, setPageState] = React.useState(PAGE_STATE.EMAIL);
+	const [securityQuestion, setSecurityQuestion] = React.useState("");
+	const [changePasswordSuccess , setChangePasswordSuccess] = React.useState("");
 	const navigate = useNavigate();
 	const {
 		register,
 		handleSubmit,
+		setError,
+		clearErrors,
 		watch,
 		formState: { errors, isSubmitting },
 	} = useForm();
@@ -58,33 +65,96 @@ export default React.forwardRef((props, ref) => {
 
 	const handleEmailSubmit = React.useCallback(
 		(data) => {
-			// TODO: Implement submitting email to get security question
-			// *Use usersService.getUserSecurityQuestion() to get the security question
-			// !NOTE: Only setPageState if answer is right; check api contract to know expected json
-			// If wrong, show error message
-			// setPageState(PAGE_STATE.ANSWER);
+			usersService
+				.getUserSecurityQuestion(data)
+				.then(
+					(response) => {
+						console.log(response);
+						setSecurityQuestion(response.question);
+						setPageState(PAGE_STATE.ANSWER);
+					}, 
+					(reject) => {
+						console.log(reject);
+						setError("invalidInput", {
+							type: "manual",
+							message: "Email not found.",
+						});
+					} 
+				)
+				.catch((error) => {
+					console.log(error);
+					setError("invalidInput", {
+						type: "manual",
+						message: "Something went wrong. Please try again.",
+					});				
+				});
 		},
 		[pageState]
 	);
 
 	const handleAnswerSubmit = React.useCallback(
 		(data) => {
-			// TODO: Implement submitting answer to get password reset
-			// !NOTE: Only setPageState if answer is right; check api contract to know expected json
-			// *Use usersService.changePassword
-			// If wrong, show error message
-			// setPageState(PAGE_STATE.PASSWORD);
+			usersService
+				.answerSecurityQuestion(data)
+				.then(
+					(response) => {
+						console.log(response);
+						setPageState(PAGE_STATE.PASSWORD);
+					},
+					(reject) => {
+						console.log(reject);
+						setError("invalidInput", {
+							type: "manual",
+							message: "Incorrect answer.",
+						});
+					}
+				)
+				.catch((error) => {
+					console.log(error);
+					setError("invalidInput", {
+						type: "manual",
+						message: "Something went wrong. Please try again.",
+					});
+				})
 		},
 		[pageState]
 	);
 
 	const handlePasswordSubmit = React.useCallback(
 		(data) => {
-			// TODO: Implement password reset functionality; reference LoginForm.js
-			// *NOTE: Navigate at the end of the promise chain if successful login
+			usersService
+				.changePassword(data)
+				.then(
+					(response) => {
+						console.log("password changed");
+						console.log(response);
+						setChangePasswordSuccess("Password changed successfully. Redirecting to login page.");
+						setTimeout(() => {
+							navigate("/");
+						}, 2000);
+					},
+					(reject) => {
+						console.log(reject);
+						setError("invalidInput", {
+							type: "manual",
+							message: "Failed to change password.",
+						});
+					}
+				)
+				.catch((error) => {
+					console.log(error);
+					setError("invalidInput", {
+						type: "manual",
+						message: "Something went wrong. Please try again.",
+					});
+				});
 		},
 		[pageState]
 	);
+
+	const onChangeClearError = React.useCallback(() => {
+		clearErrors()
+	}, [clearErrors])
 
 	return (
 		<Flex
@@ -106,6 +176,18 @@ export default React.forwardRef((props, ref) => {
 				</SlideFade>
 			</Show>
 			<form id="login-form" onSubmit={handleSubmit(handleOnSubmit)}>
+				{errors.invalidInput && (
+					<Alert status="error" mb="1rem" borderRadius={"0.5rem"}>
+						<AlertIcon />
+						<AlertTitle>{errors.invalidInput.message}</AlertTitle>
+					</Alert>
+				)}
+				{changePasswordSuccess && (
+					<Alert status="success" mb="1rem" borderRadius={"0.5rem"}>
+						<AlertIcon />
+						<AlertTitle>{changePasswordSuccess}</AlertTitle>
+					</Alert>
+				)}
 				{pageState === PAGE_STATE.EMAIL && (
 					<>
 						<FormControl isInvalid={errors.email}>
@@ -113,7 +195,7 @@ export default React.forwardRef((props, ref) => {
 							<Input
 								defaultValue={""}
 								type="email"
-								{...register("email", { required: true })}
+								{...register("email", { required: true, onChange: onChangeClearError })}
 							/>
 							{errors.email ? (
 								<FormErrorMessage>Email is required</FormErrorMessage>
@@ -127,12 +209,15 @@ export default React.forwardRef((props, ref) => {
 					<>
 						<FormControl isInvalid={errors.email}>
 							<FormLabel>Security Question</FormLabel>
-							<Input value="Test" readOnly />
+							<Input 
+								value={securityQuestion} 
+								readOnly
+							/>
 						</FormControl>
 						<br />
 						<FormControl isInvalid={errors.answer}>
 							<FormLabel>Answer</FormLabel>
-							<Input type="text" {...register("answer", { required: true })} />
+							<Input type="text" {...register("answer", { required: true , onChange: onChangeClearError})} />
 							{errors.answer ? (
 								<FormErrorMessage>Answer is required</FormErrorMessage>
 							) : (
@@ -148,7 +233,7 @@ export default React.forwardRef((props, ref) => {
 							<FormLabel>Password</FormLabel>
 							<Input
 								type="password"
-								{...register("password", { required: true })}
+								{...register("password", { required: true , onChange: onChangeClearError})}
 							/>
 							{errors.password ? (
 								<FormErrorMessage>Password is required</FormErrorMessage>

@@ -16,21 +16,26 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { set, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import usersService from "../../services/usersService";
 export default React.forwardRef((props, ref) => {
 	const { onLoginClick } = props;
+	const { login } = useAuth();
+	const navigate = useNavigate();
 	const [questions, setQuestions] = React.useState([]);
 	const {
 		register,
 		handleSubmit,
 		setError,
+		clearErrors,
 		formState: { errors, isSubmitting },
 	} = useForm();
 
 	React.useEffect(() => {
 		usersService.getSecurityQuestions().then(
 			(response) => {
-				console.log(response)
+				console.log(response);
 				setQuestions(response.questions);
 			},
 			(reject) => {
@@ -44,8 +49,38 @@ export default React.forwardRef((props, ref) => {
 
 	const handleOnRegister = (data) => {
 		console.log(data);
-		// TODO: Implement register functionality; reference LoginForm.js
+		usersService
+			.registerUser(data)
+			.then(
+				(response) => {
+					login(response);
+					navigate("/home");
+				},
+				(reject) => {
+					if (reject?.status === 409) { // Check for existing email
+						setError("registerError", {
+							type: "manual",
+							message: "User already exists",
+						});
+					} else {
+						setError("registerError", {
+							type: "manual",
+							message: "Failed to register user",
+						});
+					}
+				}
+			)
+			.catch((error) => {
+				setError("registerError", {
+					type: "manual",
+					message: "Something went wrong. Please try again.",
+				});
+			});
 	};
+
+	const onChangeClearError = React.useCallback(() => {
+		clearErrors()
+	}, [clearErrors])
 
 	return (
 		<Flex
@@ -63,12 +98,18 @@ export default React.forwardRef((props, ref) => {
 						<AlertTitle>{errors.fetchQuestions.message}</AlertTitle>
 					</Alert>
 				)}
+				{errors.registerError && (
+					<Alert status="error" mb="1rem" borderRadius={"0.5rem"}>
+						<AlertIcon />
+						<AlertTitle>{errors.registerError.message}</AlertTitle>
+					</Alert>
+				)}
 				<FormControl marginBottom={"1rem"} isInvalid={errors.email}>
 					<FormLabel>Email address</FormLabel>
 					<Input
 						defaultValue={""}
 						type="email"
-						{...register("email", { required: true })}
+						{...register("email", { required: true , onChange: onChangeClearError})}
 					/>
 					{errors.email ? (
 						<FormErrorMessage>Email is required</FormErrorMessage>
@@ -80,7 +121,7 @@ export default React.forwardRef((props, ref) => {
 					<FormLabel>Password</FormLabel>
 					<Input
 						type="password"
-						{...register("password", { required: true })}
+						{...register("password", { required: true , onChange: onChangeClearError})}
 					/>
 					{errors.password ? (
 						<FormErrorMessage>Password is required</FormErrorMessage>
@@ -90,7 +131,7 @@ export default React.forwardRef((props, ref) => {
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.question}>
 					<FormLabel>Security question</FormLabel>
-					<Select type="text" {...register("questionId", { required: true })}>
+					<Select type="text" {...register("questionId", { required: true , onChange: onChangeClearError})}>
 						{questions?.map((question) => (
 							<option key={question.id} value={question.id}>
 								{question.question}
@@ -100,7 +141,7 @@ export default React.forwardRef((props, ref) => {
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.answer}>
 					<FormLabel>Answer</FormLabel>
-					<Input type="text" {...register("answer", { required: true })} />
+					<Input type="text" {...register("answer", { required: true , onChange: onChangeClearError})} />
 					{errors.answer ? (
 						<FormErrorMessage>Answer is required</FormErrorMessage>
 					) : (
