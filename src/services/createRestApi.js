@@ -10,7 +10,7 @@ const BASE_URL =
 const createRestApi = (url) => {
 	return {
 		get: (suburl, isAuthNeeded, data) =>
-			fetchWrapper(`${url}/${suburl}`, "GET", isAuthNeeded),
+			fetchWrapper(`${url}/${suburl}`, "GET", isAuthNeeded, data),
 		post: (suburl, isAuthNeeded, data) =>
 			fetchWrapper(`${url}/${suburl}`, "POST", isAuthNeeded, data),
 		put: (suburl, isAuthNeeded, data) =>
@@ -31,9 +31,19 @@ const fetchWrapper = (url, method, isAuthNeeded, data) => {
 		withCredentials: isAuthNeeded,
 	};
 
+	// if (data && url === "/huggingface/paraphrase") {
+	// 	console.log("data", data);
+	// 	url += "?action=" + data.action + "&text=" + data.text;
+	// }
+
+	// if (data && method !== "GET") {
+	// 	options.body = JSON.stringify(data);
+	// }
+	
 	if (data) {
 		options.body = JSON.stringify(data);
 	}
+	console.log("options", options);
 
 	return fetch(BASE_URL + url, options).then((response) => {
 		return response.json().then((json) => {

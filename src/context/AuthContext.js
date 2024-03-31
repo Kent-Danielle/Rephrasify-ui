@@ -22,16 +22,33 @@ const AuthProvider = ({ children }) => {
         console.log("Logged out")
     }, []);
 
+    const updateApiCount = React.useCallback(() => {
+        console.log(userInfo.apiCount)
+        if (userInfo.apiCount <= 0) {
+            return;
+        }
+        setUserInfo((prev) => {
+            return {
+                ...prev,
+                apiCount: prev.apiCount - 1, // TODO: Update this based on backend team's logic
+            };
+        });
+    }, [userInfo]);
+
 
 	const authManager = React.useMemo(() => {
 		return {
 			isAuthenticated: userInfo?.userId !== null,
             currentUserId: userInfo?.userId,
+            currentUserEmail: userInfo?.email,
             isAdmin: userInfo?.isAdmin,
+            isOverTheLimit: userInfo?.apiCount <= 0,
+            apiCount: userInfo?.apiCount,
             login: handleUserInfo,
             logout: handleLogout,
+            updateApiCount: updateApiCount,
 		};
-	}, [userInfo, handleUserInfo, handleLogout]);
+	}, [userInfo, handleUserInfo, handleLogout, updateApiCount]);
 
 	return (
 		<AuthContext.Provider value={authManager}>{children}</AuthContext.Provider>
