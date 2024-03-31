@@ -63,13 +63,65 @@ export default React.forwardRef((props, ref) => {
 	const handleOnRowRemoved = React.useCallback((e) => {
 		let { data } = e;
 		data = { ...data, adminId: currentUserId };
-		// TODO: Implement fetch api to delete user; use userManagementService.js
+		userManagementService
+			.deleteUser(data)
+			.then(
+				(res) => {
+					setUsers((prev) => prev.filter((user) => user.userId !== data.userId));				
+				},
+				(reject) => {
+					toast({
+						title: "Error",
+						description: reject?.message,
+						status: "error",
+						duration: 9000,
+						isClosable: true,
+						position: "top-right",
+					});
+				}				
+			)
+			.catch((error) => {
+				toast({
+					title: "Error",
+					description: error.message,
+					status: "error",
+					duration: 9000,
+					isClosable: true,
+					position: "top-right",
+				});
+			});
 	}, []);
 
 	const handleOnRowUpdated = React.useCallback((e) => {
 		let { data } = e;
 		data = { ...data, adminId: currentUserId };
-		// TODO: Implement fetch api to update user; use userManagementService.js
+		userManagementService
+			.updateRole(data)
+			.then(
+				(res) => {
+					setUsers((prev) => prev.map((user) => user.userId === data.userId ? data : user));
+				},
+				(reject) => {
+					toast({
+						title: "Error",
+						description: reject?.message,
+						status: "error",
+						duration: 9000,
+						isClosable: true,
+						position: "top-right",
+					});
+				}				
+			)
+			.catch((error) => {
+				toast({
+					title: "Error",
+					description: error.message,
+					status: "error",
+					duration: 9000,
+					isClosable: true,
+					position: "top-right",
+				});			
+			});
 	}, []);
 
 	return (
