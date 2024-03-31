@@ -28,6 +28,7 @@ export default React.forwardRef((props, ref) => {
 		register,
 		handleSubmit,
 		setError,
+		clearErrors,
 		formState: { errors, isSubmitting },
 	} = useForm();
 
@@ -77,6 +78,10 @@ export default React.forwardRef((props, ref) => {
 			});
 	};
 
+	const onChangeClearError = React.useCallback(() => {
+		clearErrors()
+	}, [clearErrors])
+
 	return (
 		<Flex
 			direction={"column"}
@@ -104,7 +109,7 @@ export default React.forwardRef((props, ref) => {
 					<Input
 						defaultValue={""}
 						type="email"
-						{...register("email", { required: true })}
+						{...register("email", { required: true , onChange: onChangeClearError})}
 					/>
 					{errors.email ? (
 						<FormErrorMessage>Email is required</FormErrorMessage>
@@ -116,7 +121,7 @@ export default React.forwardRef((props, ref) => {
 					<FormLabel>Password</FormLabel>
 					<Input
 						type="password"
-						{...register("password", { required: true })}
+						{...register("password", { required: true , onChange: onChangeClearError})}
 					/>
 					{errors.password ? (
 						<FormErrorMessage>Password is required</FormErrorMessage>
@@ -126,7 +131,7 @@ export default React.forwardRef((props, ref) => {
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.question}>
 					<FormLabel>Security question</FormLabel>
-					<Select type="text" {...register("questionId", { required: true })}>
+					<Select type="text" {...register("questionId", { required: true , onChange: onChangeClearError})}>
 						{questions?.map((question) => (
 							<option key={question.id} value={question.id}>
 								{question.question}
@@ -136,7 +141,7 @@ export default React.forwardRef((props, ref) => {
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.answer}>
 					<FormLabel>Answer</FormLabel>
-					<Input type="text" {...register("answer", { required: true })} />
+					<Input type="text" {...register("answer", { required: true , onChange: onChangeClearError})} />
 					{errors.answer ? (
 						<FormErrorMessage>Answer is required</FormErrorMessage>
 					) : (

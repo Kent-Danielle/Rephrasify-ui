@@ -32,28 +32,16 @@ export default React.forwardRef((props, ref) => {
 	const { onLoginClick } = props;
 	const [pageState, setPageState] = React.useState(PAGE_STATE.EMAIL);
 	const [securityQuestion, setSecurityQuestion] = React.useState("");
-	const [forgotPasswordAlert , setForgotPasswordAlert] = React.useState("");
-	const resetForgotPasswordAlert = () => { setForgotPasswordAlert(null); };
-	const [alertType, setAlertType] = React.useState("error");
-	const setAlertMessage = (type, message) => {
-		setAlertType(type);
-		setForgotPasswordAlert(message);
-	}
-
-
+	const [changePasswordSuccess , setChangePasswordSuccess] = React.useState("");
 	const navigate = useNavigate();
 	const {
 		register,
 		handleSubmit,
 		setError,
+		clearErrors,
 		watch,
 		formState: { errors, isSubmitting },
 	} = useForm();
-
-
-	React.useEffect(() => {
-		resetForgotPasswordAlert();
-	}, [pageState]);
 
 	const handleOnSubmit = React.useCallback(
 		(data) => {
@@ -87,12 +75,15 @@ export default React.forwardRef((props, ref) => {
 					}, 
 					(reject) => {
 						console.log(reject);
-						setAlertMessage("error", "Email does not exist.");
+						setError("invalidInput", {
+							type: "manual",
+							message: "Email not found.",
+						});
 					} 
 				)
 				.catch((error) => {
 					console.log(error);
-					setError("forgotPasswordError", {
+					setError("invalidInput", {
 						type: "manual",
 						message: "Something went wrong. Please try again.",
 					});				
@@ -112,12 +103,15 @@ export default React.forwardRef((props, ref) => {
 					},
 					(reject) => {
 						console.log(reject);
-						setAlertMessage("error", "Incorrect answer. Please try again.");
+						setError("invalidInput", {
+							type: "manual",
+							message: "Incorrect answer.",
+						});
 					}
 				)
 				.catch((error) => {
 					console.log(error);
-					setError("forgotPasswordError", {
+					setError("invalidInput", {
 						type: "manual",
 						message: "Something went wrong. Please try again.",
 					});
@@ -134,19 +128,22 @@ export default React.forwardRef((props, ref) => {
 					(response) => {
 						console.log("password changed");
 						console.log(response);
-						setAlertMessage("success", "Password changed successfully. Redirecting to login page.");
+						setChangePasswordSuccess("Password changed successfully. Redirecting to login page.");
 						setTimeout(() => {
 							navigate("/");
 						}, 2000);
 					},
 					(reject) => {
 						console.log(reject);
-						setForgotPasswordAlert("Failed to change password.");
+						setError("invalidInput", {
+							type: "manual",
+							message: "Failed to change password.",
+						});
 					}
 				)
 				.catch((error) => {
 					console.log(error);
-					setError("forgotPasswordError", {
+					setError("invalidInput", {
 						type: "manual",
 						message: "Something went wrong. Please try again.",
 					});
@@ -154,6 +151,10 @@ export default React.forwardRef((props, ref) => {
 		},
 		[pageState]
 	);
+
+	const onChangeClearError = React.useCallback(() => {
+		clearErrors()
+	}, [clearErrors])
 
 	return (
 		<Flex
@@ -175,10 +176,16 @@ export default React.forwardRef((props, ref) => {
 				</SlideFade>
 			</Show>
 			<form id="login-form" onSubmit={handleSubmit(handleOnSubmit)}>
-				{forgotPasswordAlert && (
-					<Alert status={alertType === "success" ? "success" : "error"} mb="1rem" borderRadius={"0.5rem"}>
+				{errors.invalidInput && (
+					<Alert status="error" mb="1rem" borderRadius={"0.5rem"}>
 						<AlertIcon />
-						<AlertTitle>{forgotPasswordAlert}</AlertTitle>
+						<AlertTitle>{errors.invalidInput.message}</AlertTitle>
+					</Alert>
+				)}
+				{changePasswordSuccess && (
+					<Alert status="success" mb="1rem" borderRadius={"0.5rem"}>
+						<AlertIcon />
+						<AlertTitle>{changePasswordSuccess}</AlertTitle>
 					</Alert>
 				)}
 				{pageState === PAGE_STATE.EMAIL && (
@@ -188,7 +195,7 @@ export default React.forwardRef((props, ref) => {
 							<Input
 								defaultValue={""}
 								type="email"
-								{...register("email", { required: true })}
+								{...register("email", { required: true, onChange: onChangeClearError })}
 							/>
 							{errors.email ? (
 								<FormErrorMessage>Email is required</FormErrorMessage>
@@ -210,7 +217,7 @@ export default React.forwardRef((props, ref) => {
 						<br />
 						<FormControl isInvalid={errors.answer}>
 							<FormLabel>Answer</FormLabel>
-							<Input type="text" {...register("answer", { required: true })} />
+							<Input type="text" {...register("answer", { required: true , onChange: onChangeClearError})} />
 							{errors.answer ? (
 								<FormErrorMessage>Answer is required</FormErrorMessage>
 							) : (
@@ -226,7 +233,7 @@ export default React.forwardRef((props, ref) => {
 							<FormLabel>Password</FormLabel>
 							<Input
 								type="password"
-								{...register("password", { required: true })}
+								{...register("password", { required: true , onChange: onChangeClearError})}
 							/>
 							{errors.password ? (
 								<FormErrorMessage>Password is required</FormErrorMessage>
