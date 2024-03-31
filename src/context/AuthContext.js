@@ -1,4 +1,5 @@
 import React from "react";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const AuthContext = React.createContext();
 
@@ -10,7 +11,7 @@ const initialState = {
 };
 
 const AuthProvider = ({ children }) => {
-    const [userInfo, setUserInfo] = React.useState(initialState);
+    const [userInfo, setUserInfo, clearUserInfo] = useLocalStorage(initialState, "userInfo");
 
     const handleUserInfo = React.useCallback((data) => {
         console.log(data)
@@ -19,6 +20,7 @@ const AuthProvider = ({ children }) => {
 
     const handleLogout = React.useCallback(() => {
         setUserInfo(initialState);
+        clearUserInfo();
         console.log("Logged out")
     }, []);
 
