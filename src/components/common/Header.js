@@ -33,11 +33,11 @@ export default React.forwardRef((props, ref) => {
 				<NavLink style={{ marginRight: "2rem" }} to={"/home"}>
 					Home
 				</NavLink>
-				{isAdmin && (
+				{isAdmin ? (
 					<NavLink style={{ marginRight: "2rem" }} to={"/admin"}>
 						Admin
 					</NavLink>
-				)}
+				) : <></>}
 				<Button
 					colorScheme="teal"
 					variant="outline"
