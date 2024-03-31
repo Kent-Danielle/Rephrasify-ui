@@ -24,22 +24,14 @@ const fetchWrapper = (url, method, isAuthNeeded, data) => {
 	// default isAuthNeeded = false
 	isAuthNeeded = isAuthNeeded || false;
 	const options = {
+		mode: "cors",
 		method: method,
 		headers: {
 			"Content-Type": "application/json",
 		},
-		withCredentials: isAuthNeeded,
+		withCredentials: isAuthNeeded ? "include" : "omit",
 	};
 
-	// if (data && url === "/huggingface/paraphrase") {
-	// 	console.log("data", data);
-	// 	url += "?action=" + data.action + "&text=" + data.text;
-	// }
-
-	// if (data && method !== "GET") {
-	// 	options.body = JSON.stringify(data);
-	// }
-	
 	if (data) {
 		options.body = JSON.stringify(data);
 	}

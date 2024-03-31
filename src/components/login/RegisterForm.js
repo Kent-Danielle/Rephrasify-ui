@@ -57,6 +57,7 @@ export default React.forwardRef((props, ref) => {
 					navigate("/home");
 				},
 				(reject) => {
+					console.log(reject)
 					if (reject?.status === 409) { // Check for existing email
 						setError("registerError", {
 							type: "manual",

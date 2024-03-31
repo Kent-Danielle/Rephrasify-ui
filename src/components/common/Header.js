@@ -3,6 +3,7 @@ import React from "react";
 import { theme } from "@chakra-ui/theme";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import usersService from "../../services/usersService";
 
 const colors = theme.colors;
 export default React.forwardRef((props, ref) => {
@@ -11,7 +12,7 @@ export default React.forwardRef((props, ref) => {
 
 	const handleLogout = React.useCallback(() => {
 		console.log("Logging out");
-		//TODO: Call logout api here; add it in usersservice.js
+		usersService.logoutUser();
 		logout();
 		navigate("/login");
 	}, []);
