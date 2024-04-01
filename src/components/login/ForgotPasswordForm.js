@@ -77,7 +77,7 @@ export default React.forwardRef((props, ref) => {
 						console.log(reject);
 						setError("invalidInput", {
 							type: "manual",
-							message: "Email not found.",
+							message: reject?.message ?? "Email not found.",
 						});
 					} 
 				)
@@ -85,7 +85,7 @@ export default React.forwardRef((props, ref) => {
 					console.log(error);
 					setError("invalidInput", {
 						type: "manual",
-						message: "Something went wrong. Please try again.",
+						message: error?.message ?? "Something went wrong. Please try again.",
 					});				
 				});
 		},
@@ -105,7 +105,7 @@ export default React.forwardRef((props, ref) => {
 						console.log(reject);
 						setError("invalidInput", {
 							type: "manual",
-							message: "Incorrect answer.",
+							message: reject?.message ?? "Incorrect answer.",
 						});
 					}
 				)
@@ -113,7 +113,7 @@ export default React.forwardRef((props, ref) => {
 					console.log(error);
 					setError("invalidInput", {
 						type: "manual",
-						message: "Something went wrong. Please try again.",
+						message: error?.message ?? "Something went wrong. Please try again.",
 					});
 				})
 		},
@@ -137,7 +137,7 @@ export default React.forwardRef((props, ref) => {
 						console.log(reject);
 						setError("invalidInput", {
 							type: "manual",
-							message: "Failed to change password.",
+							message: reject?.message ?? "Failed to change password.",
 						});
 					}
 				)
@@ -145,7 +145,7 @@ export default React.forwardRef((props, ref) => {
 					console.log(error);
 					setError("invalidInput", {
 						type: "manual",
-						message: "Something went wrong. Please try again.",
+						message: error?.message ?? "Something went wrong. Please try again.",
 					});
 				});
 		},

@@ -14,9 +14,9 @@ import userManagementService from "./../../services/userManagementService";
 import { useToast } from "@chakra-ui/react";
 
 const columns = [
-	{ dataField: "userId", caption: "ID", width: 80, allowEditing: false },
+	{ dataField: "id", caption: "ID", width: 80, allowEditing: false },
 	{ dataField: "email", caption: "Email", width: 300, allowEditing: false },
-	{ dataField: "isAdmin", caption: "Is Admin", width: 250, allowEditing: true },
+	{ dataField: "isAdmin", caption: "Is Admin", dataType: 'boolean', width: 250, allowEditing: true },
 	{
 		dataField: "apiCount",
 		caption: "Total API Usage",
@@ -40,7 +40,7 @@ export default React.forwardRef((props, ref) => {
 				(reject) => {
 					toast({
 						title: "Error",
-						description: reject.message,
+						description: reject?.message ?? "Failed to fetch user data",
 						status: "error",
 						duration: 9000,
 						isClosable: true,
@@ -51,7 +51,7 @@ export default React.forwardRef((props, ref) => {
 			.catch((error) => {
 				toast({
 					title: "Error",
-					description: error.message,
+					description: error?.message ?? "Failed to fetch user data",
 					status: "error",
 					duration: 9000,
 					isClosable: true,
@@ -63,10 +63,20 @@ export default React.forwardRef((props, ref) => {
 	const handleOnRowRemoved = React.useCallback((e) => {
 		let { data } = e;
 		data = { ...data, adminId: currentUserId };
+		data.userId = data?.id;
 		userManagementService
 			.deleteUser(data)
 			.then(
-				(res) => {},
+				(res) => {
+					toast({
+						title: `Success: User ${data.email} deleted`,
+						description: res?.message,
+						status: "success",
+						duration: 9000,
+						isClosable: true,
+						position: "top-right",
+					});
+				},
 				(reject) => {
 					toast({
 						title: "Error",
@@ -91,12 +101,24 @@ export default React.forwardRef((props, ref) => {
 	}, []);
 
 	const handleOnRowUpdated = React.useCallback((e) => {
+		console.log(e)
 		let { data } = e;
 		data = { ...data, adminId: currentUserId };
+		data.isAdmin = data.isAdmin ? 1 : 0;
+		data.userId = data?.id;
 		userManagementService
 			.updateRole(data)
 			.then(
-				(res) => {},
+				(res) => {
+					toast({
+						title: `Success: User ${data.email} updated`,
+						description: res?.message,
+						status: "success",
+						duration: 9000,
+						isClosable: true,
+						position: "top-right",
+					});
+				},
 				(reject) => {
 					toast({
 						title: "Error",

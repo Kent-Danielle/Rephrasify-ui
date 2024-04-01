@@ -41,7 +41,7 @@ export default React.forwardRef((props, ref) => {
 			(reject) => {
 				setError("fetchQuestions", {
 					type: "manual",
-					message: "Failed to fetch security questions",
+					message: reject?.message ?? "Failed to fetch security questions",
 				});
 			}
 		);
@@ -61,12 +61,12 @@ export default React.forwardRef((props, ref) => {
 					if (reject?.status === 409) { // Check for existing email
 						setError("registerError", {
 							type: "manual",
-							message: "User already exists",
+							message: reject?.message ?? "User already exists",
 						});
 					} else {
 						setError("registerError", {
 							type: "manual",
-							message: "Failed to register user",
+							message: reject?.message ?? "Failed to register user",
 						});
 					}
 				}
@@ -74,7 +74,7 @@ export default React.forwardRef((props, ref) => {
 			.catch((error) => {
 				setError("registerError", {
 					type: "manual",
-					message: "Something went wrong. Please try again.",
+					message: error?.message ?? "Something went wrong. Please try again.",
 				});
 			});
 	};

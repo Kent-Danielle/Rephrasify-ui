@@ -17,9 +17,9 @@ import userManagementService from "../../services/userManagementService";
 import { useToast } from "@chakra-ui/react";
 
 const columns = [
-	{ dataField: "method", caption: "HTTP Method", width: 80, allowEditing: false },
+	{ dataField: "verb", caption: "HTTP Method", width: 150, allowEditing: false },
 	{ dataField: "endpoint", caption: "API Endpoint", width: 300, allowEditing: false },
-	{ dataField: "usage", caption: "Call Count", width: 250, allowEditing: false },
+	{ dataField: "usageCount", caption: "Call Count", width: 175, allowEditing: false },
 ];
 
 const CALL_INTERVAL = 30000;
@@ -39,7 +39,7 @@ export default React.forwardRef((props, ref) => {
 			(reject) => {
 				toast({
 					title: "Error",
-					description: reject.message,
+					description: reject?.message ?? "Failed to fetch usage data",
 					status: "error",
 					duration: 9000,
 					isClosable: true,
@@ -50,7 +50,7 @@ export default React.forwardRef((props, ref) => {
 		.catch((error) => {
 			toast({
 				title: "Error",
-				description: error.message,
+				description: error.message ?? "Failed to fetch usage data",
 				status: "error",
 				duration: 9000,
 				isClosable: true,

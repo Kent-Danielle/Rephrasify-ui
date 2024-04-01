@@ -48,14 +48,14 @@ export default React.forwardRef((props, ref) => {
 				(reject) => {
 					setError("invalidLogin", {
 						type: "manual",
-						message: "Invalid email/password",
+						message: reject?.message ?? "Invalid email/password",
 					});
 				}
 			)
 			.catch((error) => {
 				setError("invalidLogin", {
 					type: "manual",
-					message: "Something went wrong. Please try again.",
+					message: error?.message ?? "Something went wrong. Please try again.",
 				});
 			});
 	};

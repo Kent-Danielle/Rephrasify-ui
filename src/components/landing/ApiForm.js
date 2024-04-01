@@ -18,11 +18,12 @@ import {
 	Select,
 	Box,
 	AlertTitle,
+	Skeleton,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 
 const ACTIONS = {
-  PARAPHRASE: "Paraphrase this text",
+	PARAPHRASE: "Paraphrase this text",
 	FIX_GRAMMAR: "Fix the grammar",
 	IMPROVE_COHERENCE: "Make this text more coherent",
 	IMPROVE_READABILITY: "Rewrite to make this easier to understand",
@@ -32,10 +33,10 @@ const ACTIONS = {
 };
 
 export default React.forwardRef((props, ref) => {
-	const { currentUserId, isOverTheLimit, updateApiCount } =
-		useAuth();
-    const [paraphrasedText, setParaphrasedText] = React.useState("");
-		const [apiAlert, setApiAlert] = React.useState("");
+	const { currentUserId, isOverTheLimit, updateApiCount } = useAuth();
+	const [paraphrasedText, setParaphrasedText] = React.useState("");
+	const [apiAlert, setApiAlert] = React.useState("");
+	const [isLoaded, setIsLoaded] = React.useState(true);
 	const {
 		register,
 		handleSubmit,
@@ -43,28 +44,36 @@ export default React.forwardRef((props, ref) => {
 		formState: { errors, isSubmitting },
 	} = useForm();
 
-	const handleOnSubmit = React.useCallback((data) => {
-		data = { ...data, userId: currentUserId }
-        // *Note: data includes userId incase you need it for the API call
-        // *If successful result, update Api count & setParaphrasedText()
-				aiService
-					.paraphraseText(data)
-					.then(
-						(response) => {
-							console.log(response);
-							setParaphrasedText(response.text);
-							updateApiCount();
-							setApiAlert("");
-						},
-						(reject) => {
-							console.log(reject);
-							setApiAlert("Error with Api response");
-						})
-						.catch((error) => {
-							console.log(error);
-							setApiAlert("Fatal error with Api response");
-						})
-	}, [updateApiCount]);
+	const handleOnSubmit = React.useCallback(
+		(data) => {
+			data = { ...data, userId: currentUserId };
+			setIsLoaded(false);
+			// *Note: data includes userId incase you need it for the API call
+			// *If successful result, update Api count & setParaphrasedText()
+			aiService
+				.paraphraseText(data)
+				.then(
+					(response) => {
+						console.log(response);
+						setParaphrasedText(response?.generated_text ?? "");
+						updateApiCount();
+						setApiAlert("");
+					},
+					(reject) => {
+						console.log(reject);
+						setApiAlert(reject?.message ?? "Error with Api response");
+					}
+				)
+				.catch((error) => {
+					console.log(error);
+					setApiAlert(error?.message ?? "Fatal error with Api response");
+				})
+				.finally(() => {
+					setIsLoaded(true);
+				});
+		},
+		[updateApiCount]
+	);
 
 	return (
 		<Flex direction={{ base: "column", md: "row" }} height={"100%"}>
@@ -82,9 +91,9 @@ export default React.forwardRef((props, ref) => {
 							</option>
 						))}
 					</Select>
-                    {errors.action && (
-                        <FormErrorMessage>Input is required</FormErrorMessage>
-                    )}
+					{errors.action && (
+						<FormErrorMessage>Input is required</FormErrorMessage>
+					)}
 				</FormControl>
 				<FormControl isInvalid={errors.text}>
 					<Textarea
@@ -134,12 +143,14 @@ export default React.forwardRef((props, ref) => {
 					</Alert>
 				)}
 				<FormControl>
-					<Textarea
-						resize={"vertical"}
-						rows={isOverTheLimit ? 10 : 12}
-						readOnly
-                        value={paraphrasedText}
-					/>
+					<Skeleton isLoaded={isLoaded}>
+						<Textarea
+							resize={"vertical"}
+							rows={isOverTheLimit ? 10 : 12}
+							readOnly
+							value={paraphrasedText}
+						/>
+					</Skeleton>
 					{errors.text && (
 						<FormErrorMessage>Input is required</FormErrorMessage>
 					)}
