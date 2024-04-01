@@ -28,9 +28,6 @@ const AuthProvider = ({ children }) => {
 	}, [setUserInfo, clearUserInfo]);
 
 	const updateApiCount = React.useCallback(() => {
-		if (userInfo.apiCount <= 0) {
-			return;
-		}
 		setUserInfo((prev) => {
 			return {
 				...prev,
