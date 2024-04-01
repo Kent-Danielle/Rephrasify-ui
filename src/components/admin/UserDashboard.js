@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import { DataGrid } from "devextreme-react";
 import {
 	Editing,
@@ -7,11 +8,10 @@ import {
 	Scrolling,
 	SearchPanel,
 } from "devextreme-react/cjs/data-grid";
-import "./dx.fluent.chakra.css";
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 import userManagementService from "./../../services/userManagementService";
-import { useToast } from "@chakra-ui/react";
+import "./dx.fluent.chakra.css";
 
 const columns = [
 	{ dataField: "id", caption: "ID", width: 80, allowEditing: false },
@@ -58,7 +58,7 @@ export default React.forwardRef((props, ref) => {
 					position: "top-right",
 				});
 			});
-	}, [currentUserId]);
+	}, [currentUserId, toast]);
 
 	const handleOnRowRemoved = React.useCallback((e) => {
 		let { data } = e;
@@ -98,10 +98,9 @@ export default React.forwardRef((props, ref) => {
 					position: "top-right",
 				});
 			});
-	}, []);
+	}, [currentUserId, toast]);
 
 	const handleOnRowUpdated = React.useCallback((e) => {
-		console.log(e)
 		let { data } = e;
 		data = { ...data, adminId: currentUserId };
 		data.isAdmin = data.isAdmin ? 1 : 0;
@@ -140,7 +139,7 @@ export default React.forwardRef((props, ref) => {
 					position: "top-right",
 				});
 			});
-	}, []);
+	}, [currentUserId, toast]);
 
 	return (
 		<DataGrid

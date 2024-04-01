@@ -1,28 +1,26 @@
 import {
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
-	Input,
-	Button,
-	FormHelperText,
-	Flex,
-	VStack,
-	Text,
-	Link,
-	Show,
-	SlideFade,
-	Heading,
 	Alert,
 	AlertIcon,
 	AlertTitle,
-	AlertDescription,
+	Button,
+	Flex,
+	FormControl,
+	FormErrorMessage,
+	FormHelperText,
+	FormLabel,
+	Heading,
+	Input,
+	Link,
+	Show,
+	SlideFade,
+	Text,
 } from "@chakra-ui/react";
+import { theme } from "@chakra-ui/theme";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { theme } from "@chakra-ui/theme";
-import usersService from "../../services/usersService";
 import { useAuth } from "../../context/AuthContext";
+import usersService from "../../services/usersService";
 
 const colors = theme.colors;
 export default React.forwardRef((props, ref) => {
@@ -61,8 +59,8 @@ export default React.forwardRef((props, ref) => {
 	};
 
 	const onChangeClearError = React.useCallback(() => {
-		clearErrors()
-	}, [clearErrors])
+		clearErrors();
+	}, [clearErrors]);
 
 	return (
 		<Flex
@@ -96,7 +94,10 @@ export default React.forwardRef((props, ref) => {
 					<Input
 						defaultValue={""}
 						type="email"
-						{...register("email", { required: true, onChange: onChangeClearError})}
+						{...register("email", {
+							required: true,
+							onChange: onChangeClearError,
+						})}
 					/>
 					{errors.email ? (
 						<FormErrorMessage>Email is required</FormErrorMessage>
@@ -109,7 +110,10 @@ export default React.forwardRef((props, ref) => {
 					<FormLabel>Password</FormLabel>
 					<Input
 						type="password"
-						{...register("password", { required: true, onChange: onChangeClearError })}
+						{...register("password", {
+							required: true,
+							onChange: onChangeClearError,
+						})}
 					/>
 					{errors.password ? (
 						<FormErrorMessage>Password is required</FormErrorMessage>

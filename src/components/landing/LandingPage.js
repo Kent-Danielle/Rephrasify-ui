@@ -1,13 +1,12 @@
+import { Flex, Heading } from "@chakra-ui/react";
 import React from "react";
-import PageContainer from "../common/PageContainer";
-import Header from "../common/Header";
 import { useAuth } from "../../context/AuthContext";
-import { Alert, AlertIcon, Flex, Heading, Text } from "@chakra-ui/react";
+import PageContainer from "../common/PageContainer";
 import ApiForm from "./ApiForm";
 import "./LandingPage.css";
 
 export default React.forwardRef((props, ref) => {
-	const { currentUserEmail, apiCount, isOverTheLimit, updateApiCount } =
+	const { currentUserEmail, apiCount } =
 		useAuth();
 
 	return (

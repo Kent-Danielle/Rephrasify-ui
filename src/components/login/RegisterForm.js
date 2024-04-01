@@ -1,21 +1,20 @@
 import {
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
-	Input,
-	Button,
-	FormHelperText,
-	Flex,
-	VStack,
-	Text,
-	Link,
-	Select,
 	Alert,
 	AlertIcon,
 	AlertTitle,
+	Button,
+	Flex,
+	FormControl,
+	FormErrorMessage,
+	FormHelperText,
+	FormLabel,
+	Input,
+	Link,
+	Select,
+	Text,
 } from "@chakra-ui/react";
 import React from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import usersService from "../../services/usersService";
@@ -35,7 +34,6 @@ export default React.forwardRef((props, ref) => {
 	React.useEffect(() => {
 		usersService.getSecurityQuestions().then(
 			(response) => {
-				console.log(response);
 				setQuestions(response.questions);
 			},
 			(reject) => {
@@ -45,10 +43,9 @@ export default React.forwardRef((props, ref) => {
 				});
 			}
 		);
-	}, []);
+	}, [setError]);
 
 	const handleOnRegister = (data) => {
-		console.log(data);
 		usersService
 			.registerUser(data)
 			.then(
@@ -57,8 +54,8 @@ export default React.forwardRef((props, ref) => {
 					navigate("/home");
 				},
 				(reject) => {
-					console.log(reject)
-					if (reject?.status === 409) { // Check for existing email
+					if (reject?.status === 409) {
+						// Check for existing email
 						setError("registerError", {
 							type: "manual",
 							message: reject?.message ?? "User already exists",
@@ -80,8 +77,8 @@ export default React.forwardRef((props, ref) => {
 	};
 
 	const onChangeClearError = React.useCallback(() => {
-		clearErrors()
-	}, [clearErrors])
+		clearErrors();
+	}, [clearErrors]);
 
 	return (
 		<Flex
@@ -110,7 +107,10 @@ export default React.forwardRef((props, ref) => {
 					<Input
 						defaultValue={""}
 						type="email"
-						{...register("email", { required: true , onChange: onChangeClearError})}
+						{...register("email", {
+							required: true,
+							onChange: onChangeClearError,
+						})}
 					/>
 					{errors.email ? (
 						<FormErrorMessage>Email is required</FormErrorMessage>
@@ -122,7 +122,10 @@ export default React.forwardRef((props, ref) => {
 					<FormLabel>Password</FormLabel>
 					<Input
 						type="password"
-						{...register("password", { required: true , onChange: onChangeClearError})}
+						{...register("password", {
+							required: true,
+							onChange: onChangeClearError,
+						})}
 					/>
 					{errors.password ? (
 						<FormErrorMessage>Password is required</FormErrorMessage>
@@ -132,7 +135,13 @@ export default React.forwardRef((props, ref) => {
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.question}>
 					<FormLabel>Security question</FormLabel>
-					<Select type="text" {...register("questionId", { required: true , onChange: onChangeClearError})}>
+					<Select
+						type="text"
+						{...register("questionId", {
+							required: true,
+							onChange: onChangeClearError,
+						})}
+					>
 						{questions?.map((question) => (
 							<option key={question.id} value={question.id}>
 								{question.question}
@@ -142,7 +151,13 @@ export default React.forwardRef((props, ref) => {
 				</FormControl>
 				<FormControl marginBottom={"1rem"} isInvalid={errors.answer}>
 					<FormLabel>Answer</FormLabel>
-					<Input type="text" {...register("answer", { required: true , onChange: onChangeClearError})} />
+					<Input
+						type="text"
+						{...register("answer", {
+							required: true,
+							onChange: onChangeClearError,
+						})}
+					/>
 					{errors.answer ? (
 						<FormErrorMessage>Answer is required</FormErrorMessage>
 					) : (

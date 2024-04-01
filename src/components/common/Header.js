@@ -1,6 +1,6 @@
-import { Button, Flex, Heading, Link, SlideFade } from "@chakra-ui/react";
-import React from "react";
+import { Button, Flex, Heading, SlideFade } from "@chakra-ui/react";
 import { theme } from "@chakra-ui/theme";
+import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import usersService from "../../services/usersService";
@@ -11,11 +11,10 @@ export default React.forwardRef((props, ref) => {
 	const { logout, isAdmin } = useAuth();
 
 	const handleLogout = React.useCallback(() => {
-		console.log("Logging out");
 		usersService.logoutUser();
 		logout();
 		navigate("/login");
-	}, []);
+	}, [logout, navigate]);
 
 	return (
 		<SlideFade offsetY={-100} in={true} style={{ width: "100%" }}>

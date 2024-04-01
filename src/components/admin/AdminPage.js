@@ -1,10 +1,10 @@
-import { Flex, Heading, VStack } from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
 import { theme } from "@chakra-ui/theme";
 import "devextreme/dist/css/dx.fluent.saas.light.css";
 import React from "react";
 import PageContainer from "../common/PageContainer";
-import UserDashboard from "./UserDashboard";
 import ApiDashboard from "./ApiDashboard";
+import UserDashboard from "./UserDashboard";
 
 const colors = theme.colors;
 

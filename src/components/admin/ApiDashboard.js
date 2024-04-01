@@ -1,20 +1,19 @@
+import { useToast } from "@chakra-ui/react";
 import { Button, DataGrid } from "devextreme-react";
 import {
 	Editing,
+	FilterRow,
 	HeaderFilter,
+	Item,
 	Pager,
 	Paging,
 	Scrolling,
-	SearchPanel,
-	Toolbar,
-	Item,
-	FilterRow,
+	Toolbar
 } from "devextreme-react/data-grid";
-import "./dx.fluent.chakra.css";
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 import userManagementService from "../../services/userManagementService";
-import { useToast } from "@chakra-ui/react";
+import "./dx.fluent.chakra.css";
 
 const columns = [
 	{ dataField: "verb", caption: "HTTP Method", width: 150, allowEditing: false },
@@ -57,7 +56,7 @@ export default React.forwardRef((props, ref) => {
 				position: "top-right",
 			});
 		});
-	}, [currentUserId]);
+	}, [currentUserId, toast]);
 
 	React.useEffect(() => {
 		getData(); // Initial on load call as it would otherwise take 10 seconds to load
@@ -69,7 +68,7 @@ export default React.forwardRef((props, ref) => {
 		return () => {
 			clearInterval(refresh);
 		};
-	}, [currentUserId]);
+	}, [currentUserId, getData]);
 
 	return (
 		<DataGrid

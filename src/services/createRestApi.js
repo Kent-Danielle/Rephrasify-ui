@@ -35,7 +35,6 @@ const fetchWrapper = (url, method, isAuthNeeded, data) => {
 	if (data) {
 		options.body = JSON.stringify(data);
 	}
-	console.log("options", options);
 
 	return fetch(BASE_URL + url, options).then((response) => {
 		return response.json().then((json) => {

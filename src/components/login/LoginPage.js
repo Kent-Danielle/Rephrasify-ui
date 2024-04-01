@@ -1,22 +1,17 @@
 import {
 	Center,
 	Flex,
-	FormControl,
-	FormLabel,
 	Heading,
-	Input,
-	SlideFade,
-	Fade,
 	Hide,
-	Show,
+	SlideFade,
 	VStack,
 } from "@chakra-ui/react";
+import { theme } from "@chakra-ui/theme";
 import React from "react";
+import ForgotPasswordForm from "./ForgotPasswordForm";
 import "./Login.css";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
-import { theme } from "@chakra-ui/theme";
-import ForgotPasswordForm from "./ForgotPasswordForm";
 
 const colors = theme.colors;
 

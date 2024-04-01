@@ -11,19 +11,16 @@ const setWithExpiry = (key, value, ttl) => {
 };
 
 const getWithExpiry = (key) => {
-    if (!localStorage) {
-        return null;
-    }
+	if (!localStorage) {
+		return null;
+	}
 
 	const itemStr = localStorage.getItem(key);
-    console.log(key)
-    console.log(itemStr)
 	if (!itemStr) {
 		return null;
 	}
 	const item = JSON.parse(itemStr);
 	const now = new Date().getTime();
-    console.log(item)
 	if (now > item.expiry) {
 		localStorage.removeItem(key);
 		return null;
@@ -34,7 +31,6 @@ const getWithExpiry = (key) => {
 const useLocalStorage = (initialData, key, ttl = 3600000) => {
 	const [data, setData] = useState(() => {
 		const storedData = getWithExpiry(key);
-        console.log(storedData)
 		return storedData !== null ? storedData : initialData;
 	});
 

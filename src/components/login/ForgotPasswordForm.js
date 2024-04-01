@@ -1,25 +1,24 @@
 import {
-	FormControl,
-	FormErrorMessage,
-	FormLabel,
-	Input,
-	Button,
-	FormHelperText,
-	Flex,
-	VStack,
-	Text,
-	Link,
-	Show,
-	SlideFade,
-	Heading,
 	Alert,
 	AlertIcon,
 	AlertTitle,
+	Button,
+	Flex,
+	FormControl,
+	FormErrorMessage,
+	FormHelperText,
+	FormLabel,
+	Heading,
+	Input,
+	Link,
+	Show,
+	SlideFade,
+	Text,
 } from "@chakra-ui/react";
+import { theme } from "@chakra-ui/theme";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { theme } from "@chakra-ui/theme";
 import usersService from "../../services/usersService";
 
 const colors = theme.colors;
@@ -32,7 +31,7 @@ export default React.forwardRef((props, ref) => {
 	const { onLoginClick } = props;
 	const [pageState, setPageState] = React.useState(PAGE_STATE.EMAIL);
 	const [securityQuestion, setSecurityQuestion] = React.useState("");
-	const [changePasswordSuccess , setChangePasswordSuccess] = React.useState("");
+	const [changePasswordSuccess, setChangePasswordSuccess] = React.useState("");
 	const navigate = useNavigate();
 	const {
 		register,
@@ -43,9 +42,92 @@ export default React.forwardRef((props, ref) => {
 		formState: { errors, isSubmitting },
 	} = useForm();
 
+	const handleEmailSubmit = React.useCallback(
+		(data) => {
+			usersService
+				.getUserSecurityQuestion(data)
+				.then(
+					(response) => {
+						setSecurityQuestion(response.question);
+						setPageState(PAGE_STATE.ANSWER);
+					},
+					(reject) => {
+						setError("invalidInput", {
+							type: "manual",
+							message: reject?.message ?? "Email not found.",
+						});
+					}
+				)
+				.catch((error) => {
+					setError("invalidInput", {
+						type: "manual",
+						message:
+							error?.message ?? "Something went wrong. Please try again.",
+					});
+				});
+		},
+		[setError]
+	);
+
+	const handleAnswerSubmit = React.useCallback(
+		(data) => {
+			usersService
+				.answerSecurityQuestion(data)
+				.then(
+					(response) => {
+						setPageState(PAGE_STATE.PASSWORD);
+					},
+					(reject) => {
+						setError("invalidInput", {
+							type: "manual",
+							message: reject?.message ?? "Incorrect answer.",
+						});
+					}
+				)
+				.catch((error) => {
+					setError("invalidInput", {
+						type: "manual",
+						message:
+							error?.message ?? "Something went wrong. Please try again.",
+					});
+				});
+		},
+		[setError]
+	);
+
+	const handlePasswordSubmit = React.useCallback(
+		(data) => {
+			usersService
+				.changePassword(data)
+				.then(
+					(response) => {
+						setChangePasswordSuccess(
+							"Password changed successfully. Redirecting to login page."
+						);
+						setTimeout(() => {
+							navigate("/");
+						}, 2000);
+					},
+					(reject) => {
+						setError("invalidInput", {
+							type: "manual",
+							message: reject?.message ?? "Failed to change password.",
+						});
+					}
+				)
+				.catch((error) => {
+					setError("invalidInput", {
+						type: "manual",
+						message:
+							error?.message ?? "Something went wrong. Please try again.",
+					});
+				});
+		},
+		[navigate, setError]
+	);
+
 	const handleOnSubmit = React.useCallback(
 		(data) => {
-			console.log(data)
 			switch (pageState) {
 				case PAGE_STATE.EMAIL:
 					handleEmailSubmit(data);
@@ -60,101 +142,12 @@ export default React.forwardRef((props, ref) => {
 					break;
 			}
 		},
-		[pageState]
-	);
-
-	const handleEmailSubmit = React.useCallback(
-		(data) => {
-			usersService
-				.getUserSecurityQuestion(data)
-				.then(
-					(response) => {
-						console.log(response);
-						setSecurityQuestion(response.question);
-						setPageState(PAGE_STATE.ANSWER);
-					}, 
-					(reject) => {
-						console.log(reject);
-						setError("invalidInput", {
-							type: "manual",
-							message: reject?.message ?? "Email not found.",
-						});
-					} 
-				)
-				.catch((error) => {
-					console.log(error);
-					setError("invalidInput", {
-						type: "manual",
-						message: error?.message ?? "Something went wrong. Please try again.",
-					});				
-				});
-		},
-		[pageState]
-	);
-
-	const handleAnswerSubmit = React.useCallback(
-		(data) => {
-			usersService
-				.answerSecurityQuestion(data)
-				.then(
-					(response) => {
-						console.log(response);
-						setPageState(PAGE_STATE.PASSWORD);
-					},
-					(reject) => {
-						console.log(reject);
-						setError("invalidInput", {
-							type: "manual",
-							message: reject?.message ?? "Incorrect answer.",
-						});
-					}
-				)
-				.catch((error) => {
-					console.log(error);
-					setError("invalidInput", {
-						type: "manual",
-						message: error?.message ?? "Something went wrong. Please try again.",
-					});
-				})
-		},
-		[pageState]
-	);
-
-	const handlePasswordSubmit = React.useCallback(
-		(data) => {
-			usersService
-				.changePassword(data)
-				.then(
-					(response) => {
-						console.log("password changed");
-						console.log(response);
-						setChangePasswordSuccess("Password changed successfully. Redirecting to login page.");
-						setTimeout(() => {
-							navigate("/");
-						}, 2000);
-					},
-					(reject) => {
-						console.log(reject);
-						setError("invalidInput", {
-							type: "manual",
-							message: reject?.message ?? "Failed to change password.",
-						});
-					}
-				)
-				.catch((error) => {
-					console.log(error);
-					setError("invalidInput", {
-						type: "manual",
-						message: error?.message ?? "Something went wrong. Please try again.",
-					});
-				});
-		},
-		[pageState]
+		[pageState, handleEmailSubmit, handleAnswerSubmit, handlePasswordSubmit]
 	);
 
 	const onChangeClearError = React.useCallback(() => {
-		clearErrors()
-	}, [clearErrors])
+		clearErrors();
+	}, [clearErrors]);
 
 	return (
 		<Flex
@@ -195,7 +188,10 @@ export default React.forwardRef((props, ref) => {
 							<Input
 								defaultValue={""}
 								type="email"
-								{...register("email", { required: true, onChange: onChangeClearError })}
+								{...register("email", {
+									required: true,
+									onChange: onChangeClearError,
+								})}
 							/>
 							{errors.email ? (
 								<FormErrorMessage>Email is required</FormErrorMessage>
@@ -209,15 +205,18 @@ export default React.forwardRef((props, ref) => {
 					<>
 						<FormControl isInvalid={errors.email}>
 							<FormLabel>Security Question</FormLabel>
-							<Input 
-								value={securityQuestion} 
-								readOnly
-							/>
+							<Input value={securityQuestion} readOnly />
 						</FormControl>
 						<br />
 						<FormControl isInvalid={errors.answer}>
 							<FormLabel>Answer</FormLabel>
-							<Input type="text" {...register("answer", { required: true , onChange: onChangeClearError})} />
+							<Input
+								type="text"
+								{...register("answer", {
+									required: true,
+									onChange: onChangeClearError,
+								})}
+							/>
 							{errors.answer ? (
 								<FormErrorMessage>Answer is required</FormErrorMessage>
 							) : (
@@ -233,7 +232,10 @@ export default React.forwardRef((props, ref) => {
 							<FormLabel>Password</FormLabel>
 							<Input
 								type="password"
-								{...register("password", { required: true , onChange: onChangeClearError})}
+								{...register("password", {
+									required: true,
+									onChange: onChangeClearError,
+								})}
 							/>
 							{errors.password ? (
 								<FormErrorMessage>Password is required</FormErrorMessage>

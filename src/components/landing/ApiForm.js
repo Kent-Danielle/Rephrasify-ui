@@ -1,26 +1,20 @@
-import React from "react";
-import PageContainer from "../common/PageContainer";
-import Header from "../common/Header";
-import aiService from "../../services/aiService";
-import { useAuth } from "../../context/AuthContext";
 import {
 	Alert,
 	AlertIcon,
-	ButtonGroup,
+	AlertTitle,
+	Box,
+	Button,
 	Flex,
 	FormControl,
 	FormErrorMessage,
-	Heading,
-	Input,
-	Text,
-	Button,
-	Textarea,
 	Select,
-	Box,
-	AlertTitle,
 	Skeleton,
+	Textarea,
 } from "@chakra-ui/react";
-import { set, useForm } from "react-hook-form";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { useAuth } from "../../context/AuthContext";
+import aiService from "../../services/aiService";
 
 const ACTIONS = {
 	PARAPHRASE: "Paraphrase this text",
@@ -54,25 +48,22 @@ export default React.forwardRef((props, ref) => {
 				.paraphraseText(data)
 				.then(
 					(response) => {
-						console.log(response);
 						setParaphrasedText(response?.generated_text ?? "");
 						updateApiCount();
 						setApiAlert("");
 					},
 					(reject) => {
-						console.log(reject);
 						setApiAlert(reject?.message ?? "Error with Api response");
 					}
 				)
 				.catch((error) => {
-					console.log(error);
 					setApiAlert(error?.message ?? "Fatal error with Api response");
 				})
 				.finally(() => {
 					setIsLoaded(true);
 				});
 		},
-		[updateApiCount]
+		[updateApiCount, currentUserId]
 	);
 
 	return (
