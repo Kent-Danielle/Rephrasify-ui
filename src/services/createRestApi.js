@@ -29,7 +29,7 @@ const fetchWrapper = (url, method, isAuthNeeded, data) => {
 		headers: {
 			"Content-Type": "application/json",
 		},
-		withCredentials: isAuthNeeded ? "include" : "omit",
+		credentials: isAuthNeeded ? "include" : "omit",
 	};
 
 	if (data) {
