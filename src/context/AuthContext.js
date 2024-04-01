@@ -4,11 +4,13 @@ import useLocalStorage from "../hooks/useLocalStorage";
 const AuthContext = React.createContext();
 
 const initialState = {
-    userId: null,
+    id: null,
     email: "",
     apiCount: 0,
     isAdmin: false,
 };
+
+const API_LIMIT = 20;
 
 const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo, clearUserInfo] = useLocalStorage(initialState, "userInfo");
@@ -32,7 +34,7 @@ const AuthProvider = ({ children }) => {
         setUserInfo((prev) => {
             return {
                 ...prev,
-                apiCount: prev.apiCount - 1, // TODO: Update this based on backend team's logic
+                apiCount: prev.apiCount + 1,
             };
         });
     }, [userInfo]);
@@ -40,11 +42,11 @@ const AuthProvider = ({ children }) => {
 
 	const authManager = React.useMemo(() => {
 		return {
-			isAuthenticated: userInfo?.userId !== null,
-            currentUserId: userInfo?.userId,
+			isAuthenticated: userInfo?.id !== null,
+            currentUserId: userInfo?.id,
             currentUserEmail: userInfo?.email,
             isAdmin: userInfo?.isAdmin,
-            isOverTheLimit: userInfo?.apiCount <= 0,
+            isOverTheLimit: userInfo?.apiCount > API_LIMIT,
             apiCount: userInfo?.apiCount,
             login: handleUserInfo,
             logout: handleLogout,

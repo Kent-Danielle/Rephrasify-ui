@@ -22,7 +22,7 @@ const columns = [
 	{ dataField: "usage", caption: "Call Count", width: 250, allowEditing: false },
 ];
 
-const CALL_INTERVAL = 10000;
+const CALL_INTERVAL = 30000;
 
 export default React.forwardRef((props, ref) => {
 	const { currentUserId } = useAuth();
@@ -31,7 +31,7 @@ export default React.forwardRef((props, ref) => {
 
 	const getData = React.useCallback(() => {
 		userManagementService
-		.getAllUsage({ adminId: currentUserId })
+		.getAllUsage(currentUserId)
 		.then(
 			(res) => {
 				setUsage(res.data);

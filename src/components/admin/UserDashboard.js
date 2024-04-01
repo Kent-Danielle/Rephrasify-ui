@@ -32,7 +32,7 @@ export default React.forwardRef((props, ref) => {
 
 	React.useEffect(() => {
 		userManagementService
-			.getAllUsers({ adminId: currentUserId })
+			.getAllUsers(currentUserId)
 			.then(
 				(res) => {
 					setUsers(res.users);
