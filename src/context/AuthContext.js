@@ -1,5 +1,7 @@
 import React from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
+import userManagementService from "../services/userManagementService";
+import { useToast } from "@chakra-ui/react";
 
 const AuthContext = React.createContext();
 
@@ -13,10 +15,35 @@ const initialState = {
 const API_LIMIT = 20;
 
 const AuthProvider = ({ children }) => {
+	const toast = useToast();
 	const [userInfo, setUserInfo, clearUserInfo] = useLocalStorage(
 		initialState,
 		"userInfo"
 	);
+
+	React.useEffect(() => {
+		if (userInfo.id) {
+			userManagementService.getUserById(userInfo.id).then((newUserInfo) => {
+				console.log(newUserInfo)
+				setUserInfo((prev) => {
+					return {
+						...prev,
+						isAdmin: newUserInfo.isAdmin,
+						apiCount: newUserInfo.apiCount,
+					};
+				});
+			}).catch((error) => {
+				toast({
+					title: "Error: fetch user info failed",
+					description: error?.message ?? "An error occurred",
+					status: "error",
+					duration: 9000,
+					isClosable: true,
+					position: "top",
+				});
+			});
+		}
+	}, [userInfo.id, setUserInfo]);
 
 	const handleUserInfo = React.useCallback((data) => {
 		setUserInfo(data);
@@ -34,7 +61,7 @@ const AuthProvider = ({ children }) => {
 				apiCount: prev.apiCount + 1,
 			};
 		});
-	}, [userInfo, setUserInfo]);
+	}, [setUserInfo]);
 
 	const authManager = React.useMemo(() => {
 		return {
